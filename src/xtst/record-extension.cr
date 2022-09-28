@@ -2,6 +2,7 @@ require "./c/Xtstlib"
 
 module Xtst
   include C
+  include X11
 
   class RecordExtension
     # The underlying Display object. Docs recommend using two separate
@@ -14,7 +15,7 @@ module Xtst
     # on the system.
     def initialize
       @ctrl_display.synchronize(true)
-      version = X.record_query_version(@ctrl_display.dpy, out _, out _)
+      version = LibXtst.record_query_version(@ctrl_display.dpy, out _, out _)
       raise "X Record Extension Library not installed. You probably need to install libXtst on your system." if version == 0
     end
 
@@ -24,18 +25,18 @@ module Xtst
     # Example usage:
     # ```
     # range = record.create_range
-    # range.device_events.first = ::X11::KeyPress
-    # range.device_events.last = ::X11::ButtonRelease
+    # range.device_events.first = X11::KeyPress
+    # range.device_events.last = X11::ButtonRelease
     # context = record.create_context(record_range)
     # ```
-    def create_context(range : X::RecordRange, *, flags = 0, client_spec = X::RecordClientSpec::AllClients)
+    def create_context(range : LibXtst::RecordRange, *, flags = 0, client_spec = LibXtst::RecordClientSpec::AllClients)
       p_range = pointerof(range)
-      X.record_create_context(@ctrl_display.dpy, 0, pointerof(client_spec), 1, pointerof(p_range), 1)
+      LibXtst.record_create_context(@ctrl_display.dpy, 0, pointerof(client_spec), 1, pointerof(p_range), 1)
     end
 
     # Create a mutable `range` for usage in `create_context`.
     def create_range
-      ::X11::X.record_alloc_range.value
+      LibXtst.record_alloc_range.value
     end
 
     @async_callback_box : Pointer(Void)?
@@ -49,7 +50,7 @@ module Xtst
     # Example usage:
     # ```
     # record.enable_context_async(context) do |record_data|
-    #   next if record_data.category != ::X11::X::RecordInterceptDataCategory::FromServer.value
+    #   next if record_data.category != Xtst::LibXtst::RecordInterceptDataCategory::FromServer.value
     #   xevent = record_data.data
     #   repeat = xevent[2] == 1
     #   next if repeat
@@ -64,10 +65,10 @@ module Xtst
     #   record.process_replies
     # end
     # ```
-    def enable_context_async(context : X::RecordContext, &callback : X::RecordInterceptData ->)
+    def enable_context_async(context : LibXtst::RecordContext, &callback : LibXtst::RecordInterceptData ->)
       boxed = Box.box(callback)
       @async_callback_box = boxed
-      status = X.record_enable_context_async(@data_display.dpy, context, ->(closure_data, record_data) do
+      status = LibXtst.record_enable_context_async(@data_display.dpy, context, ->(closure_data, record_data) do
         closure_as_callback = Box(typeof(callback)).unbox(closure_data)
         closure_as_callback.call(record_data.value)
       end, boxed)
@@ -75,7 +76,7 @@ module Xtst
     end
 
     def process_replies
-      X.record_process_replies(@data_display.dpy)
+      LibXtst.record_process_replies(@data_display.dpy)
     end
 
     def finalize

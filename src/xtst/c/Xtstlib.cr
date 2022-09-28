@@ -3,12 +3,12 @@ require "x11"
 module Xtst::C
   include ::X11::C
 
-  @[Link("X11")]
-  lib Xtst
+  @[Link("Xtst")]
+  lib LibXtst
     fun record_query_version = XRecordQueryVersion(
       dpy : X::PDisplay,
-      major_version : Int32*,
-      minor_version : Int32*
+      major_version : PInt32,
+      minor_version : PInt32
     ) : X::Status
 
     fun record_alloc_range = XRecordAllocRange() : RecordRange*
@@ -20,8 +20,8 @@ module Xtst::C
       delivered_events : RecordRange8
       device_events : RecordRange8
       errors : RecordRange8
-      client_started : Bool
-      client_died : Bool
+      client_started : X11::X::Bool
+      client_died : X11::X::Bool
     end
     struct RecordRange8
       first : CChar
@@ -44,7 +44,7 @@ module Xtst::C
     
     alias RecordContext = UInt64
     fun record_create_context = XRecordCreateContext(
-      dpy : PDisplay,
+      dpy : X::PDisplay,
       flags : Int32,
       clients : RecordClientSpec*,
       n_clients : Int32,
@@ -53,7 +53,7 @@ module Xtst::C
     ) : RecordContext
     
     fun record_enable_context_async = XRecordEnableContextAsync(
-      dpy : PDisplay,
+      dpy : X::PDisplay,
       context : RecordContext,
       callback : RecordInterceptProc,
       client_data : Void*
@@ -64,13 +64,13 @@ module Xtst::C
       server_time : Time
       client_seq : UInt64
       category : Int32
-      client_swapped : Bool
-      data : Pointer
+      client_swapped : X11::X::Bool
+      data : X::Pointer
       data_len : UInt64
     end
     
     fun record_process_replies = XRecordProcessReplies(
-      dpy : PDisplay
+      dpy : X::PDisplay
     ) : Void
     
     enum RecordInterceptDataCategory
@@ -81,7 +81,5 @@ module Xtst::C
       StartOfData
       EndOfData
     end
-
   end
-
 end
