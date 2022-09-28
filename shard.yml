@@ -1,5 +1,5 @@
 name: xtst
-version: 0.1.1
+version: 1.0.0
 
 authors:
   - Philip Waritschlager <philip@waritschlager.de>
@@ -7,7 +7,7 @@ authors:
 description: |
   Xtst (X11 extension) bindings for Crystal language.
 
-crystal: 0.0.1
+crystal: 1.0.0
 
 license: MIT
 
