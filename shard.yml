@@ -1,0 +1,16 @@
+name: xtst
+version: 0.0.1
+
+authors:
+  - Philip Waritschlager <philip@waritschlager.de>
+
+description: |
+  Xtst (X11 extension) bindings for Crystal language.
+
+crystal: 0.0.1
+
+license: MIT
+
+dependencies:
+  x11:
+    github: TamasSzekeres/x11-cr
