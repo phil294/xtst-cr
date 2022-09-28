@@ -1,13 +1,15 @@
-# require "x11"
+require "x11"
 
 module Xtst::C
+  include ::X11::C
+
   @[Link("X11")]
   lib Xtst
     fun record_query_version = XRecordQueryVersion(
-      dpy : PDisplay,
+      dpy : X::PDisplay,
       major_version : Int32*,
       minor_version : Int32*
-    ) : Status
+    ) : X::Status
 
     fun record_alloc_range = XRecordAllocRange() : RecordRange*
     struct RecordRange
@@ -55,7 +57,7 @@ module Xtst::C
       context : RecordContext,
       callback : RecordInterceptProc,
       client_data : Void*
-    ) : Status
+    ) : X::Status
     alias RecordInterceptProc = Void*, RecordInterceptData* ->
     struct RecordInterceptData
       id_base : XID
