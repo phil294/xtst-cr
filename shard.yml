@@ -13,4 +13,5 @@ license: MIT
 
 dependencies:
   x11:
-    github: TamasSzekeres/x11-cr
+    github: phil294/x11-cr
+    branch: ahk_x11
